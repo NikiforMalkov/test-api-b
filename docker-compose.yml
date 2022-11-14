@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    volumes:
+      - .docker/nginx/nginx.conf:/etc/nginx/conf.d/site.conf
+      - .:/var/www/html:delegated
+    links:
+      - php
+  php:
+    image: apimock
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "${FPM_PORT}:${FPM_PORT}"
+    depends_on:
+      - db
+      - elasticsearch
+    links:
+      - db
+      - elasticsearch
+    volumes:
+      - .:/var/www/html
+  migrationsandfixtures:
+    image: apimock
+    depends_on:
+      - db
+    links:
+      - db
+    entrypoint: sh -c "sleep 30 && php artisan migrate:fresh --seed && php artisan db:seed --class=CategoriesSeeder && php artisan db:seed --class=ItemSeeder"
+  db:
+    image: postgres:13.4-buster
+    restart: unless-stopped
+    command: postgres -c config_file=/etc/postgresql.conf
+    environment:
+        - POSTGRES_HOST_AUTH_METHOD=trust
+        - POSTGRES_DB=${DB_DATABASE}
+        - POSTGRES_USER=${DB_USERNAME}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+        - "${DB_PORT:-5442}:5442"
+    volumes:
+        - ./data/db:/var/lib/postgresql/data
+        - .docker/postgres/postgresql.conf:/etc/postgresql.conf
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=false
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+#      - http.cors.allow-origin=*
+#      - discovery.zen.minimum_master_nodes=2
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/esdata:/usr/share/elasticsearch/data
+    ports:
+      - "${ES_PORT}:${ES_PORT}"
