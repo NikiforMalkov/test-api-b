@@ -2,7 +2,6 @@
 
 namespace App\Item\Services;
 
-use App\Elastic\Services\ElasticService;
 use App\Elastic\Services\ElasticServiceInterface;
 use App\Item\Dto\SearchRequestDto;
 
@@ -16,6 +15,7 @@ class ItemService implements ItemServiceInterface
     }
 
     public function search(SearchRequestDto $searchDto) {
+        //TODO: возможно стоит возвращать модели, а не в голом виде, но это небольшое тестовое
         return $this->elasticService->search('item_index', [
             'match' => [
                 'name' => $searchDto->query,

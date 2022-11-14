@@ -29,6 +29,7 @@ services:
   migrationsandfixtures:
     image: apimock
     depends_on:
+      - php
       - db
     links:
       - db

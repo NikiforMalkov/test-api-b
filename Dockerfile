@@ -11,6 +11,8 @@ COPY composer.lock composer.lock
 
 RUN composer install --ignore-platform-reqs --no-interaction --no-plugins --no-progress --no-scripts --prefer-dist
 
+RUN file="$(ls -a /var/www/html)" && echo $file
+
 FROM php:8.1.12-fpm
 
 WORKDIR /var/www/html
