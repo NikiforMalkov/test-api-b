@@ -1,4 +1,4 @@
-# RUN applocation
+# RUN application
 
 copy .env.example
 rename to .env
@@ -8,6 +8,7 @@ run command in console
 docker-compose --build
 docker-compose -up
 ```
+wait 40 seconds then you can open api link 
 
 # Api
 ```
