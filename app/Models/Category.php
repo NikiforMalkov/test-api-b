@@ -36,6 +36,7 @@ class Category extends Model
      *
      * @var integer
      */
+    protected $id;
 
      /**
      * @OA\Property(
@@ -46,6 +47,7 @@ class Category extends Model
      *
      * @var string
      */
+    protected $name;
 
     /**
      * @OA\Property(
@@ -56,6 +58,7 @@ class Category extends Model
      *
      * @var integer
      */
+    protected $parent_id;
 
     /**
      * @OA\Property(
@@ -66,5 +69,6 @@ class Category extends Model
      *
      * @var integer
      */
+    protected $index;
 
 }
