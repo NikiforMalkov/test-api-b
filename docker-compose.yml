@@ -24,8 +24,6 @@ services:
     links:
       - db
       - elasticsearch
-    volumes:
-      - .:/var/www/html
   migrationsandfixtures:
     image: apimock
     depends_on:
