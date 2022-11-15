@@ -57,10 +57,7 @@ RUN php artisan cache:clear
 RUN php artisan config:clear
 RUN php artisan storage:link
 
-#TODO: remove this
-#RUN chown -R www-data:www-data /var/www/html
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 777 /var/www/html
+RUN chmod o+w ./storage/ -R
 
 RUN php artisan l5-swagger:generate
 
