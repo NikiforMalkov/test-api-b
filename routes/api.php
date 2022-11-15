@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('category/all', [CategoriesController::class, 'all']);
+Route::put('category/{id}', [CategoriesController::class, 'update']);
 Route::get('item/search', [ItemsController::class, 'search']);
