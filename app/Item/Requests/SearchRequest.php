@@ -23,7 +23,7 @@ final class SearchRequest extends FormRequest
     {
         return new SearchRequestDto([
             'query' => $this->input('query'),
-            'orderBy' => $this->input('orderBy'),
+            'orderBy' => $this->input('orderBy', 'desc'),
         ]);
     }
 }
