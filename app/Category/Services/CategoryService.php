@@ -2,7 +2,9 @@
 
 namespace App\Category\Services;
 
-use App\Entities\CategoryTreeNode;
+use App\Category\Dto\UpdateCategoryRequestDto;
+use App\Category\Entities\CategoryTreeNode;
+use App\Jobs\UpdateCategoryTreeJob;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +14,7 @@ class CategoryService implements CategoryServiceInterface
 
     public function all() {
         //TODO: собираем категории только через очередь
+        //TODO: перключаемся на redis или что-то такое
         if (!Cache::has('categories')) {
             $categories = Category::query()->get();
             $tree = $this->buildTree($categories);
@@ -60,6 +63,21 @@ class CategoryService implements CategoryServiceInterface
         $parent->setChildNodes($branches);
 
         return $parent;
+    }
+
+    public function update(UpdateCategoryRequestDto $categoryDto): Category
+    {
+        //TODO: можно разбить на отдельный слой работы с бд - репозиторий
+        $category = Category::where(['id' => $categoryDto->id])->firstOrFail();
+        $category->fill([
+            'name' => $categoryDto->name,
+            'parent_id' => $categoryDto->parent_id,
+            'index' => $categoryDto->index,
+        ]);
+        $category->save();
+        //TODO: переместить в конфиги время
+        UpdateCategoryTreeJob::dispatch($category)->delay(now()->addSeconds(30));
+        return $category;
     }
 
 }
