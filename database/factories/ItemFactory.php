@@ -37,6 +37,7 @@ class ItemFactory extends Factory
         return $this->afterMaking(function (Item $item) {
             //
         })->afterCreating(function (Item $item) {
+            //TODO: переместить в конфиги время
             ProcessItem::dispatch($item)->delay(now()->addSeconds(30));
         });
     }
